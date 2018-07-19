@@ -7,6 +7,8 @@ import java.util.NoSuchElementException;
 
 public class LinkedStack<E> implements IStack<E> {
 
+  private int size; // For size of the stack
+
   /**
    * The topmost node of this stack. The stack gets pushed down from here.
    */
@@ -19,6 +21,7 @@ public class LinkedStack<E> implements IStack<E> {
     Node<E> node = new Node<E>(obj);
     node.next = top;
     top = node;
+    size++;
     return obj;
   }
 
@@ -38,6 +41,7 @@ public class LinkedStack<E> implements IStack<E> {
     }
     E obj = top.data;
     top = top.next;
+    size--;
     return obj;
 
   }
@@ -51,12 +55,38 @@ public class LinkedStack<E> implements IStack<E> {
   @Override
   public List<E> asList() {
 
-    List<E> list = new ArrayList<E>();
-    Node<E> current = top;
-    while (current != null) {
-      list.add(current.data);
-      current = current.next;
-    }
-    return list;
+    final ArrayList<E> result = new ArrayList<>(size);
+    populateList(top, result);
+
+    return result;
+
   }
+
+  private void populateList(final Node<E> curr, final List<E> result) {
+    if (size == 0) {
+      return;
+    }
+    result.add(curr.data);
+    if (curr.next != null) {
+      populateList(curr.next, result);
+    }
+  }
+
+  @Override
+  public List<E> asFifoList() {
+    final ArrayList<E> result = new ArrayList<>(size);
+    populateFifoList(top, result);
+    return result;
+  }
+
+  private void populateFifoList(final Node<E> curr, final List<E> result) {
+    if (size == 0) {
+      return;
+    }
+    if (curr.next != null) {
+      populateFifoList(curr.next, result);
+    }
+    result.add(curr.data);
+  }
+
 }
